@@ -29,4 +29,31 @@
  */
 export function formatChaiMenu(items) {
   // Your code here
+
+  if (!Array.isArray(items) || items.length === 0) return "";
+
+  items = items.filter(
+    (item) =>
+      item.price > 0 && typeof item.name === "string" && item.name.length > 0,
+  );
+  let menu = "";
+
+  items.forEach((item) => {
+    menu += `${item.name.toUpperCase()} - Rs.${item.price},`;
+  });
+
+  menu = menu
+    .slice(0, menu.length - 1)
+    .split(",")
+    .join(" | ");
+
+  return menu;
 }
+
+console.log(
+  formatChaiMenu([
+    { name: "chai", price: 10 },
+    { name: "pani", price: 0 },
+    { name: "samosa", price: 12 },
+  ]),
+);

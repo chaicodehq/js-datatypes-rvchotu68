@@ -42,4 +42,81 @@
  */
 export function generateReportCard(student) {
   // Your code here
+
+  if (
+    !student ||
+    typeof student !== "object" ||
+    typeof student.name !== "string" ||
+    student.name === "" ||
+    !student.marks ||
+    Object.entries(student.marks).length === 0
+  )
+    return null;
+
+  for (let mark of Object.values(student.marks)) {
+    if (mark < 0 || mark > 100 || typeof mark !== "number") return null;
+  }
+
+  const totalMarks = Object.values(student.marks).reduce(
+    (prev, mark) => prev + mark,
+    0,
+  );
+
+  const subjectCount = Object.entries(student.marks).length;
+
+  const percentage = parseFloat(
+    ((totalMarks / (subjectCount * 100)) * 100).toFixed(2),
+  );
+
+  let grade = "";
+
+  if (percentage >= 90) grade = "A+";
+  else if (percentage >= 80) grade = "A";
+  else if (percentage >= 70) grade = "B";
+  else if (percentage >= 60) grade = "C";
+  else if (percentage >= 40) grade = "D";
+  else if (percentage < 40) grade = "F";
+
+  const marks = student.marks;
+  const subjects = Object.keys(student.marks);
+
+  const passedSubjects = subjects.filter((sub) => marks[sub] >= 40);
+  const failedSubjects = subjects.filter((sub) => marks[sub] < 40);
+
+  let highestSubject = subjects[0];
+  let highestSubjectMarks = marks[subjects[0]];
+
+  for (let i = 0; i < subjects.length; i++) {
+    if (marks[subjects[i]] > highestSubjectMarks) {
+      highestSubjectMarks = marks[subjects[i]];
+      highestSubject = subjects[i];
+    }
+  }
+
+  let lowestSubject = subjects[0];
+  let lowestSubjectMarks = marks[subjects[0]];
+
+  for (let i = 0; i < subjects.length; i++) {
+    if (marks[subjects[i]] < lowestSubjectMarks) {
+      lowestSubjectMarks = marks[subjects[i]];
+      lowestSubject = subjects[i];
+    }
+  }
+
+  const card = {
+    name: student.name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects,
+    failedSubjects,
+    subjectCount,
+  };
+
+  console.log(card);
+  return card;
 }
+
+generateReportCard({ name: "Rahul", marks: { maths: "eighty" } });

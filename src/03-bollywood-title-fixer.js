@@ -29,6 +29,52 @@
  *   fixBollywoodTitle("dil ka kya kare")
  *   // => "Dil ka Kya Kare"
  */
+
+const avoid = [
+  "ka",
+  "ki",
+  "ke",
+  "se",
+  "aur",
+  "ya",
+  "the",
+  "of",
+  "in",
+  "a",
+  "an",
+];
+
 export function fixBollywoodTitle(title) {
   // Your code here
+  if (typeof title !== "string") return "";
+
+  title = title.trimStart().trimEnd();
+  if (title === "") return "";
+
+  title = title.toLowerCase();
+
+  let title_arr = title.split(" ");
+
+  console.log(typeof title_arr);
+
+  title_arr = title_arr.filter((title) => title !== " " && title !== "");
+
+  console.log(title_arr);
+
+  let updated_title = [];
+
+  for (let i = 0; i < title_arr.length; i++) {
+    if (
+      !avoid.includes(title_arr[i]) ||
+      (avoid.includes(title_arr[i]) && i === 0)
+    ) {
+      const modified_title =
+        title_arr[i][0].toUpperCase() + title_arr[i].slice(1);
+      updated_title.push(modified_title);
+    } else updated_title.push(title_arr[i]);
+  }
+
+  return updated_title.join(" ");
 }
+
+console.log(fixBollywoodTitle("kabhi   khushi   kabhi   gham"));

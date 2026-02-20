@@ -45,4 +45,68 @@
  */
 export function iplAuctionSummary(team, players) {
   // Your code here
+
+  if (
+    !team ||
+    typeof team.purse !== "number" ||
+    !team.purse ||
+    team.purse < 0 ||
+    !players ||
+    !Array.isArray(players) ||
+    players.length === 0
+  )
+    return null;
+
+  const summary = {
+    teamName: team.name,
+    totalSpent: 0,
+    remaining: 0,
+    playerCount: 0,
+    costliestPlayer: {},
+    cheapestPlayer: {},
+    averagePrice: 0,
+    byRole: {},
+    isOverBudget: false,
+  };
+
+  summary.totalSpent = players.reduce((prev, curr) => {
+    summary.playerCount += 1;
+    return prev + curr.price;
+  }, 0);
+
+  summary.remaining = team.purse - summary.totalSpent;
+
+  summary.averagePrice = Math.round(summary.totalSpent / summary.playerCount);
+
+  summary.isOverBudget = summary.remaining < 0 ? true : false;
+
+  summary.byRole = players.reduce((prev, curr) => {
+    if (curr.role in prev) prev[curr.role] += 1;
+    else prev[curr.role] = 1;
+
+    return prev;
+  }, {});
+
+  summary.costliestPlayer = players[0];
+
+  for (let player of players) {
+    if (player.price > summary.costliestPlayer.price) {
+      summary.costliestPlayer = player;
+    }
+  }
+
+  summary.cheapestPlayer = players[0];
+
+  for (let player of players) {
+    if (player.price < summary.cheapestPlayer.price) {
+      summary.cheapestPlayer = player;
+    }
+  }
+
+  console.log(summary);
+  return summary;
 }
+
+iplAuctionSummary({ name: "MI", purse: 1000 }, [
+  { name: "A", role: "bat", price: 1000 },
+]);

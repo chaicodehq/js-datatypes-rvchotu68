@@ -48,4 +48,111 @@
  */
 export function analyzeUPITransactions(transactions) {
   // Your code here
+
+  if (
+    !transactions ||
+    !Array.isArray(transactions) ||
+    transactions.length === 0
+  )
+    return null;
+
+  transactions = transactions.filter(
+    (transaction) =>
+      transaction.amount > 0 &&
+      (transaction.type === "credit" || transaction.type === "debit"),
+  );
+
+  if (transactions.length === 0) return null;
+
+  const history = {
+    totalCredit: 0,
+    totalDebit: 0,
+    netBalance: 0,
+    transactionCount: 0,
+    avgTransaction: 0,
+    highestTransaction: {},
+    categoryBreakdown: {},
+    frequentContact: "",
+    allAbove100: true,
+    hasLargeTransaction: false,
+  };
+
+  transactions.forEach((transaction) => {
+    if (transaction.type === "debit") history.totalDebit += transaction.amount;
+    else history.totalCredit += transaction.amount;
+  });
+
+  history.netBalance = history.totalCredit - history.totalDebit;
+  history.transactionCount = transactions.length;
+
+  history.avgTransaction = Math.round(
+    (history.totalCredit + history.totalDebit) / history.transactionCount,
+  );
+
+  history.highestTransaction = transactions[0];
+
+  for (let transaction of transactions) {
+    if (transaction.amount > history.highestTransaction.amount)
+      history.highestTransaction = transaction;
+
+    if (transaction.category in history.categoryBreakdown)
+      history.categoryBreakdown[transaction.category] += transaction.amount;
+    else history.categoryBreakdown[transaction.category] = transaction.amount;
+
+    if (history.allAbove100)
+      history.allAbove100 = transaction.amount > 100 ? true : false;
+  }
+
+  history.hasLargeTransaction = transactions.some(
+    (transaction) => transaction.amount >= 5000,
+  );
+
+  history.frequentContact = frequentContact(transactions);
+
+  console.log(history);
+
+  return history;
 }
+
+function frequentContact(transactions) {
+  const contactList = {};
+
+  // console.log(transactions);
+
+  for (let transaction of transactions) {
+    // console.log(transaction);
+    if (transaction.to in contactList) contactList[transaction.to] += 1;
+    else contactList[transaction.to] = 1;
+  }
+
+  // console.log(Object.entries(contactList));
+
+  const freqContact = Array.from(Object.entries(contactList));
+
+  freqContact.sort((a, b) => {
+    return b[1] - a[1];
+  });
+
+  // console.log(freqContact);
+
+  return freqContact[0][0];
+}
+
+analyzeUPITransactions([
+  {
+    id: "T1",
+    type: "transfer",
+    amount: 500,
+    to: "A",
+    category: "a",
+    date: "2025-01-01",
+  },
+  {
+    id: "T2",
+    type: "debit",
+    amount: -100,
+    to: "B",
+    category: "b",
+    date: "2025-01-02",
+  },
+]);

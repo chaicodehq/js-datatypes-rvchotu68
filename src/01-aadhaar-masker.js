@@ -29,4 +29,16 @@
  */
 export function maskAadhaar(aadhaarNumber) {
   // Your code here
+  if (
+    typeof aadhaarNumber !== "string" ||
+    aadhaarNumber.length !== 12 ||
+    Number.isNaN(Number(aadhaarNumber))
+  )
+    return "INVALID";
+
+  const numberString = aadhaarNumber.slice(-4);
+
+  return "XXXX-XXXX-" + numberString;
 }
+
+// console.log(maskAadhaar("987654320012"));
